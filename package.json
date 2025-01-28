@@ -1,0 +1,21 @@
+{
+  "name": "epic-rv-client",
+  "version": "1.0.0",
+  "description": "A Node.js client for automated login + 2FA to Twenty20 Solutions (Epic RV), using node-fetch.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "dotenv": "^16.0.3"
+  },
+  "keywords": ["epic", "rv", "twenty20", "2fa", "auth", "client"],
+  "author": "Luis Lobo Borobia",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.7.0",
+    "fetch-cookie": "^3.1.0",
+    "otplib": "^12.0.1"
+  }
+}
