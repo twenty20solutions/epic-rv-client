@@ -1,6 +1,6 @@
 {
   "name": "epic-rv-client",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Node.js client for automated login + 2FA to Twenty20 Solutions (Epic RV), using node-fetch.",
   "main": "index.js",
   "types": "index.d.ts",
