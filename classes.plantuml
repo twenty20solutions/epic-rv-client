@@ -1,0 +1,252 @@
+@startuml
+
+class UserList {
+  id: string
+  org?: Organization
+  users?: User[]
+  groups?: Group[]
+  rootGroup?: Group
+  parent?: UserList
+  deleted?: boolean
+}
+
+class Equipment {
+  id: string
+  name: string
+  equipmentType: string
+  settings: EquipmentSettings
+  dashboards: Dashboard[]
+  org: Organization
+  site?: Site
+  userList?: UserList
+  groups: Group[]
+  connection?: Connection
+  rcu: Rcu
+  gateUserList?: GateUserList
+  gateUserLists?: GateUserList[]
+  credentials?: Credential[]
+  deleted: boolean
+  state: string
+}
+
+class EquipmentSettings {
+  latitude: string
+  longitude: string
+  timezone?: string
+}
+
+class Rcu {
+  id: string
+  name: string
+  ip?: string
+  port?: number
+  kind: enum {PHYSICAL, VIRTUAL}
+  org?: Organization
+  site?: Site
+  equipment?: Equipment[]
+  deleted?: boolean
+}
+
+class Dashboard {
+  id: string
+  name: string
+  equipment?: Equipment[]
+  userList?: UserList
+  groups: Group[]
+  defaultLayout?: DashboardLayout
+  deleted?: boolean
+}
+
+class DashboardLayout {
+  id: string
+  dashboard: Dashboard
+  user?: User
+  template?: enum {default, custom}
+  deleted?: boolean
+}
+
+class ResourceList {
+  id: string
+  type: Type
+  org: Organization
+  groups?: Group[]
+  deleted?: boolean
+}
+
+class Type {
+  id: string
+  name: string
+  org: Organization
+  groups?: Group[]
+  deleted?: boolean
+}
+
+class Group {
+  id: string
+  name: string
+  org?: Organization
+  userList: UserList
+  users?: User[]
+  dashboards?: Dashboard[]
+  equipment?: Equipment[]
+  deleted?: boolean
+}
+
+class Credential {
+  id: string
+  user?: User
+  equipment?: Equipment
+  org?: Organization
+  kind: enum
+  key: string
+  value: string
+  deleted?: boolean
+}
+
+class User {
+  id: string
+  name: string
+  email: string
+  userList: UserList
+  groups?: Group[]
+  credentials?: Credential[]
+  org?: Organization
+  deleted?: boolean
+}
+
+class Organization {
+  id: string
+  name: string
+  rootGroup: Group
+  userList: UserList
+  users?: User[]
+  groups?: Group[]
+  equipment?: Equipment[]
+  deleted?: boolean
+}
+
+class Site {
+  id: string
+  name: string
+  org?: Organization
+  groups?: Group[]
+  equipment?: Equipment[]
+  rcus?: Rcu[]
+  deleted?: boolean
+}
+
+class Event {
+  id: string
+  equipment: Equipment
+  description: string
+  eventName: string
+  eventDate: Date
+  org: Organization
+  parent?: Event
+}
+
+class Connection {
+  id: string
+  name?: string
+  ip: string
+  port: number
+  type: string
+  equipment?: Equipment[]
+}
+
+class Schedule {
+  id: string
+  org: Organization
+  name: string
+  enabled: boolean
+  timezone: string
+  data: Data
+}
+
+class GateUserList {
+  id: string
+  name: string
+  org?: Organization
+}
+
+class GateUser {
+  id: string
+  gateUserList: GateUserList
+  firstName: string
+  lastName: string
+}
+
+class License {
+  id: string
+  licenseType: LicenseType
+  org: Organization
+}
+
+class LicenseType {
+  id: string
+  name: string
+  scope: enum
+  consumer: enum
+}
+
+' Relationships (Deduplicated, Corrected, Complete):
+
+UserList "1" <-- "*" User
+UserList "1" <-- "*" Group
+UserList "1" -- "1" Organization
+UserList "1" -- "0..1" UserList : parent
+
+Organization "1" <-- "*" Equipment
+Organization "1" <-- "*" User
+Organization "1" <-- "*" Site
+Organization "1" <-- "*" Event
+Organization "1" <-- "*" Schedule
+Organization "1" <-- "*" Credential
+Organization "1" <-- "*" GateUserList
+Organization "1" <-- "*" License
+Organization "1" <-- "*" Type
+Organization "1" <-- "*" ResourceList
+Organization "1" -- "1" Group : rootGroup
+
+Group "*" <-- "*" Equipment
+Group "*" <-- "*" User
+Group "*" <-- "*" Dashboard
+Group "*" <-- "*" Site
+Group "*" <-- "*" Rcu
+Group "*" <-- "*" Type
+Group "*" <-- "*" ResourceList
+Group "1" -- "0..1" Group : parent
+
+Equipment "1" <-- "*" Credential
+Equipment "1" <-- "*" Event
+Equipment "1" <-- "*" Dashboard
+Equipment "1" <-- "*" Connection
+Equipment "*" <-- "*" GateUserList
+Equipment "1" -- "1" Rcu
+Equipment "1" -- "0..1" Connection
+Equipment "*" -- "1" Site
+
+Dashboard "1" <-- "*" DashboardLayout
+Dashboard "1" -- "0..1" DashboardLayout : defaultLayout
+
+Credential "*" -- "0..1" User
+Credential "*" -- "0..1" Equipment
+
+Site "1" <-- "*" Rcu
+
+ResourceList "1" -- "1" Type
+
+GateUserList "1" <-- "*" GateUser
+GateUserList "*" -- "*" Equipment
+GateUserList "*" -- "*" Schedule : schedules
+GateUserList "*" -- "*" Schedule : exclusionSchedules
+
+LicenseType "1" <-- "*" License
+LicenseType "*" -- "*" LicenseType : dependsOn
+
+Event "1" -- "*" Event : parent
+Event "*" -- "1" Equipment
+Event "*" -- "1" Organization
+Event "*" -- "0..1" Type
+
+@enduml
